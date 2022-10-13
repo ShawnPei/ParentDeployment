@@ -1,4 +1,4 @@
-package com.udacity.catpoint.service;
+package org.example;
 
 import com.udacity.catpoint.application.StatusListener;
 import com.udacity.catpoint.data.AlarmStatus;
@@ -9,6 +9,9 @@ import com.udacity.catpoint.data.Sensor;
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.udacity.catpoint.data.AlarmStatus.NO_ALARM;
+import static com.udacity.catpoint.data.AlarmStatus.PENDING_ALARM;
 
 /**
  * Service that receives information about changes to the security system. Responsible for
@@ -35,7 +38,7 @@ public class SecurityService {
      */
     public void setArmingStatus(ArmingStatus armingStatus) {
         if(armingStatus == ArmingStatus.DISARMED) {
-            setAlarmStatus(AlarmStatus.NO_ALARM);
+            setAlarmStatus(NO_ALARM);
         }
         securityRepository.setArmingStatus(armingStatus);
     }
@@ -49,7 +52,7 @@ public class SecurityService {
         if(cat && getArmingStatus() == ArmingStatus.ARMED_HOME) {
             setAlarmStatus(AlarmStatus.ALARM);
         } else {
-            setAlarmStatus(AlarmStatus.NO_ALARM);
+            setAlarmStatus(NO_ALARM);
         }
 
         statusListeners.forEach(sl -> sl.catDetected(cat));
@@ -84,7 +87,7 @@ public class SecurityService {
             return; //no problem if the system is disarmed
         }
         switch(securityRepository.getAlarmStatus()) {
-            case NO_ALARM -> setAlarmStatus(AlarmStatus.PENDING_ALARM);
+            case NO_ALARM -> setAlarmStatus(PENDING_ALARM);
             case PENDING_ALARM -> setAlarmStatus(AlarmStatus.ALARM);
         }
     }
@@ -94,8 +97,8 @@ public class SecurityService {
      */
     private void handleSensorDeactivated() {
         switch(securityRepository.getAlarmStatus()) {
-            case PENDING_ALARM -> setAlarmStatus(AlarmStatus.NO_ALARM);
-            case ALARM -> setAlarmStatus(AlarmStatus.PENDING_ALARM);
+            case PENDING_ALARM -> setAlarmStatus(NO_ALARM);
+            case ALARM -> setAlarmStatus(PENDING_ALARM);
         }
     }
 
